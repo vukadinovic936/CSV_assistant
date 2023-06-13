@@ -43,10 +43,7 @@ prefix = """You are working with a pandas dataframe in Python. The name of the d
 def decode_response(response: str) -> dict:
     if not ALLOW_PLOTTING:
         return response
-    
-    
-    words = response.split(" ")
-    if ("table" in words or "bar"  in words or "line"  in words):
+    if ("\"table\"" in response or "\"bar"  in response or "\"line\""  in response):
         return json.loads(response)
     else:
         return response
@@ -54,8 +51,7 @@ def decode_response(response: str) -> dict:
 def write_response(response_dict: dict):
     if not ALLOW_PLOTTING:
         return response_dict
-    words = response_dict.split(" ")
-    if "table" in words:
+    if "\"table\"" in response:
         data = response_dict["table"]
         table_data= []
         table_data.append(list(data['columns']))
@@ -66,7 +62,7 @@ def write_response(response_dict: dict):
         plt.show()
         return f"Here I displayed your table"
   
-    elif "bar" in words:
+    elif "\"bar\"" in response:
         data = response_dict["bar"]
         plt.hist(np.squeeze(np.array(data['data'])))
         plt.ylabel("Count")
@@ -74,7 +70,7 @@ def write_response(response_dict: dict):
         plt.show()
         return "Here I displayed your bar chart!"
     
-    elif "line" in words:
+    elif "\"line\"" in response:
         data = response_dict["line"]
         xs = [l[0] for l in data['data']]
         ys = [l[1] for l in data['data']]
